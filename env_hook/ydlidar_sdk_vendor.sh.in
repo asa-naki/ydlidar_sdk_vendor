@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Environment hook for ydlidar_sdk_vendor package
+# This script sets up the environment for YDLIDAR SDK
+
+# Add YDLIDAR SDK library path to LD_LIBRARY_PATH
+if [ -d "@CMAKE_INSTALL_PREFIX@/lib" ]; then
+    export LD_LIBRARY_PATH="@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH"
+fi
+
+# Add YDLIDAR SDK binary path to PATH
+if [ -d "@CMAKE_INSTALL_PREFIX@/bin" ]; then
+    export PATH="@CMAKE_INSTALL_PREFIX@/bin:$PATH"
+fi
+
+# Set PKG_CONFIG_PATH for pkg-config integration
+if [ -d "@CMAKE_INSTALL_PREFIX@/lib/pkgconfig" ]; then
+    export PKG_CONFIG_PATH="@CMAKE_INSTALL_PREFIX@/lib/pkgconfig:$PKG_CONFIG_PATH"
+fi
+
+# Set YDLIDAR_SDK_ROOT for convenience
+export YDLIDAR_SDK_ROOT="@CMAKE_INSTALL_PREFIX@"

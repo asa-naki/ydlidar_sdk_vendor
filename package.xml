@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ydlidar_sdk_vendor</name>
+  <version>1.0.0</version>
+  <description>
+    Vendor package for YDLIDAR SDK library.
+    This package provides the YDLIDAR SDK as an external dependency for ROS2 packages.
+  </description>
+  
+  <maintainer email="maintainer@example.com">SHR Core Project</maintainer>
+  <license>MIT</license>
+  <license>Apache-2.0</license>
+  
+  <url type="website">https://github.com/YDLIDAR/YDLidar-SDK</url>
+  <url type="bugtracker">https://github.com/YDLIDAR/YDLidar-SDK/issues</url>
+  <url type="repository">https://github.com/YDLIDAR/YDLidar-SDK</url>
+  
+  <author>YDLIDAR Team</author>
+  
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
+  
+  <build_depend>pkg-config</build_depend>
+  
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+    <ament_cmake>
+      <environment_hook>env_hook</environment_hook>
+    </ament_cmake>
+  </export>
+</package>

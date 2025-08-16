@@ -1,0 +1,27 @@
+@PACKAGE_INIT@
+
+# Set paths for YDLIDAR SDK using PACKAGE_PREFIX_DIR
+set(YDLIDAR_SDK_ROOT "${PACKAGE_PREFIX_DIR}")
+
+# Set YDLIDAR_SDK_FOUND to TRUE to indicate the package was found
+set(YDLIDAR_SDK_FOUND TRUE)
+set(ydlidar_sdk_vendor_FOUND TRUE)
+
+# Set paths directly
+set(YDLIDAR_SDK_INCLUDE_DIRS "${YDLIDAR_SDK_ROOT}/include")
+set(YDLIDAR_SDK_LIBRARIES "${YDLIDAR_SDK_ROOT}/lib/libydlidar_sdk.so")
+
+# Create imported target if it doesn't exist
+if(NOT TARGET ydlidar_sdk::ydlidar_sdk)
+  add_library(ydlidar_sdk::ydlidar_sdk SHARED IMPORTED)
+  set_target_properties(ydlidar_sdk::ydlidar_sdk PROPERTIES
+    IMPORTED_LOCATION "${YDLIDAR_SDK_LIBRARIES}"
+    INTERFACE_INCLUDE_DIRECTORIES "${YDLIDAR_SDK_INCLUDE_DIRS}"
+  )
+endif()
+
+# Provide variables for compatibility
+set(YDLIDAR_SDK_INCLUDE_DIR "${YDLIDAR_SDK_INCLUDE_DIRS}")
+set(YDLIDAR_SDK_LIBRARY "${YDLIDAR_SDK_LIBRARIES}")
+
+check_required_components(ydlidar_sdk_vendor)
