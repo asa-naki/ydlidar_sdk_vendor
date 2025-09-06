@@ -48,43 +48,70 @@ target_link_libraries(your_target ydlidar_sdk::ydlidar_sdk)
 
 ## Operation Modes
 
-### System Installation Detection Mode
+### Automatic Mode (Default)
 
-If YDLIDAR SDK is already installed on the system, it will be used.
+- Automatically detects if YDLIDAR SDK is installed on the system
+- If not found, checks network connectivity to GitHub
+- **Online**: Downloads and builds from GitHub source automatically
+- **Offline**: Creates dummy target to prevent build failures
 
-### Source Build Mode
+## Offline Building
 
-If YDLIDAR SDK is not found on the system, it automatically downloads source code from GitHub and builds it.
+No special options required! The package automatically detects network availability.
+
+### Method 1: Pre-install YDLIDAR SDK (Recommended)
+
+Install YDLIDAR SDK system-wide (requires internet for initial setup):
+
+```bash
+# Download YDLIDAR SDK source (when online)
+git clone https://github.com/YDLIDAR/YDLidar-SDK.git
+cd YDLidar-SDK
+
+# Build and install
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+make -j$(nproc)
+sudo make install
+```
+
+### Method 2: Manual File Placement
+
+Place YDLIDAR SDK files in expected locations:
+
+- Headers: `/usr/local/include/ydlidar_sdk/`
+- Library: `/usr/local/lib/libydlidar_sdk.so`
+
+## Building
+
+Simple build command works in both online and offline environments:
+
+```bash
+colcon build --packages-select ydlidar_sdk_vendor
+```
+
+## Troubleshooting
+
+### Network Resolution Errors
+
+Network errors are automatically handled. No manual intervention required.
+The package will:
+
+1. First check for system-installed YDLIDAR SDK
+2. If not found, test network connectivity
+3. Build from source if online, create dummy target if offline
+
+### Limited Functionality Warning
+
+When building offline without pre-installed SDK, a dummy target is created with limited functionality. To restore full functionality, install YDLIDAR SDK manually using the methods above.
 
 ## Dependencies
 
 - CMake 3.16+
-- Git (for source build)
+- Git (for source build, when online)
 - C++17 compatible compiler
 
 ## License
 
 This vendor package is provided under the Apache 2.0 License.
 For the YDLIDAR SDK license, please refer to the [official repository](https://github.com/YDLIDAR/YDLidar-SDK).
-
-## Troubleshooting
-
-### Build Errors
-
-1. **Git not found**: Ensure Git is installed
-2. **Network issues**: Check your internet connection. If network errors occur, ExternalProject will automatically detect failures and display appropriate error messages
-3. **Compiler errors**: Ensure you are using a C++17 compatible compiler
-
-### Runtime Errors
-
-1. **Library not found**: Ensure the environment is sourced:
-
-   ```bash
-   source install/setup.bash
-   ```
-
-2. **Network timeout**: If the network is slow, timeouts may occur. Try building again or manually install the SDK on your system
-
-## Related Packages
-
-- `ydlidar_ros2_driver`: ROS2 driver for YDLIDAR (can use this vendor package)
