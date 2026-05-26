@@ -18,13 +18,13 @@ find_package(ament_cmake REQUIRED)
 function(check_network_connectivity result_var)
   # Try to connect to github.com with a short timeout
   execute_process(
-    COMMAND ping -c 1 -W 3 github.com
-    RESULT_VARIABLE ping_result
+    COMMAND wget --quiet --timeout=5 --tries=1 --spider https://github.com
+    RESULT_VARIABLE wget_result
     OUTPUT_QUIET
     ERROR_QUIET
   )
-  
-  if(ping_result EQUAL 0)
+
+  if(wget_result EQUAL 0)
     set(${result_var} TRUE PARENT_SCOPE)
   else()
     set(${result_var} FALSE PARENT_SCOPE)
