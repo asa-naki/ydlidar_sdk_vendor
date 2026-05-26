@@ -39,7 +39,7 @@ find_path(YDLIDAR_SDK_INCLUDE_DIR ydlidar_sdk/YDLidarDriver.h
   ${CMAKE_INSTALL_PREFIX}/include
 )
 
-find_library(YDLIDAR_SDK_LIBRARY 
+find_library(YDLIDAR_SDK_LIBRARY
   NAMES ydlidar_sdk libydlidar_sdk
   PATHS
   /usr/lib
@@ -49,50 +49,50 @@ find_library(YDLIDAR_SDK_LIBRARY
 
 if(YDLIDAR_SDK_INCLUDE_DIR AND YDLIDAR_SDK_LIBRARY)
   message(STATUS "Found YDLIDAR SDK: ${YDLIDAR_SDK_LIBRARY}")
-  
+
   # Create imported target for system-installed YDLIDAR SDK
   add_library(ydlidar_sdk::ydlidar_sdk UNKNOWN IMPORTED)
   set_target_properties(ydlidar_sdk::ydlidar_sdk PROPERTIES
     IMPORTED_LOCATION "${YDLIDAR_SDK_LIBRARY}"
     INTERFACE_INCLUDE_DIRECTORIES "${YDLIDAR_SDK_INCLUDE_DIR}"
   )
-  
+
   # Install found library info
   set(YDLIDAR_SDK_FOUND TRUE)
-  
+
 else()
   # Check network connectivity before attempting to download
   check_network_connectivity(HAS_NETWORK)
-  
+
   if(NOT HAS_NETWORK)
     message(STATUS "Network connectivity not available. Cannot download YDLIDAR SDK from GitHub.")
     message(STATUS "Building with dummy target to prevent build failures.")
     message(STATUS "To enable full functionality, please install YDLIDAR SDK manually.")
-    
+
     # Create a dummy target to avoid build failures
     add_library(ydlidar_sdk::ydlidar_sdk INTERFACE IMPORTED)
     set_target_properties(ydlidar_sdk::ydlidar_sdk PROPERTIES
       INTERFACE_COMPILE_DEFINITIONS "YDLIDAR_SDK_NOT_AVAILABLE"
     )
-    
+
     message(STATUS "Created dummy YDLIDAR SDK target - functionality will be limited")
     set(YDLIDAR_SDK_FOUND FALSE)
-    
+
   else()
     message(STATUS "YDLIDAR SDK not found on system, attempting to build from source")
-    
+
     include(ExternalProject)
-    
+
     # Set installation prefix
     set(YDLIDAR_SDK_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ydlidar_sdk_install)
-    
+
     # Try to download and build YDLIDAR SDK with error handling
-    ExternalProject_Add(ydlidar_sdk_external
+    externalproject_add(ydlidar_sdk_external
       GIT_REPOSITORY https://github.com/YDLIDAR/YDLidar-SDK.git
       GIT_TAG master
       GIT_SHALLOW TRUE
       TIMEOUT 60
-      
+
       # Configure step
       CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX=${YDLIDAR_SDK_INSTALL_PREFIX}
@@ -103,13 +103,13 @@ else()
         -DBUILD_TESTING=OFF
         -Wno-dev
         -DCMAKE_WARN_DEPRECATED=OFF
-      
+
       # Build step
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --parallel
-      
+
       # Install step
       INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install
-      
+
       # Logging - only log errors to avoid noise
       LOG_DOWNLOAD OFF
       LOG_CONFIGURE OFF
@@ -118,24 +118,24 @@ else()
       LOG_MERGED_STDOUTERR ON
       LOG_OUTPUT_ON_FAILURE ON
     )
-    
+
     # Create imported target for built YDLIDAR SDK
     add_library(ydlidar_sdk::ydlidar_sdk SHARED IMPORTED)
     set_target_properties(ydlidar_sdk::ydlidar_sdk PROPERTIES
       IMPORTED_LOCATION "${YDLIDAR_SDK_INSTALL_PREFIX}/lib/libydlidar_sdk${CMAKE_SHARED_LIBRARY_SUFFIX}"
       INTERFACE_INCLUDE_DIRECTORIES "${YDLIDAR_SDK_INSTALL_PREFIX}/include"
     )
-    
+
     # Ensure the external project is built before the imported target is used
     add_dependencies(ydlidar_sdk::ydlidar_sdk ydlidar_sdk_external)
-    
+
     # Install the built library
     install(DIRECTORY ${YDLIDAR_SDK_INSTALL_PREFIX}/
       DESTINATION .
       USE_SOURCE_PERMISSIONS
       PATTERN "*.cmake" EXCLUDE
     )
-    
+
     set(YDLIDAR_SDK_FOUND TRUE)
   endif()
 endif()
